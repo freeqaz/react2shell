@@ -343,11 +343,18 @@ The key exploitation insight - using `$@` raw chunk references to create a self-
 
 ## References
 
+**Official Disclosures:**
 - [CVE-2025-55182](https://nvd.nist.gov/vuln/detail/CVE-2025-55182) - React Server Components RCE
 - [CVE-2025-66478](https://nextjs.org/blog/CVE-2025-66478) - Next.js downstream impact
 - [React Security Advisory](https://react.dev/blog/2025/12/03/critical-security-vulnerability-in-react-server-components) - Official React disclosure
+
+**Community Research:**
 - [Searchlight Cyber Detection Guide](https://slcyber.io/research-center/high-fidelity-detection-mechanism-for-rsc-next-js-rce-cve-2025-55182-cve-2025-66478/) - High-fidelity detection methodology
-- [React Flight Protocol](https://tonyalicea.dev/blog/understanding-react-server-components/) - Background on RSC serialization
+- [Joe Desimone's PoC Analysis](https://gist.github.com/joe-desimone/ff0cae0aa0d20965d502e7a97cbde3e3) - Exploit analysis and proof of concept
+- [ejpir Technical Analysis](https://github.com/ejpir/CVE-2025-55182-research/blob/main/TECHNICAL-ANALYSIS.md) - Deep dive into the vulnerability mechanics
+
+**Background:**
+- [React Flight Protocol](https://tonyalicea.dev/blog/understanding-react-server-components/) - Understanding RSC serialization
 
 ## License
 
