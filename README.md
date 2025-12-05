@@ -4,6 +4,8 @@ _CVE-2025-55182 (React) and CVE-2025-66478 (Next.js)_
 
 **This repository contains exploit code for authorized security testing and educational purposes only.**
 
+> **See also:** Multiple researchers have published analyses of this vulnerability. Check the [References](#references) section for additional perspectives, exploit techniques, and detection methods.
+
 ## What is it?
 
 On Wednesday, December 3rd, 2025, a critical Remote Code Execution vulnerability in React Server Components was publicly disclosed. The bug, dubbed "React2Shell," allows an unauthenticated attacker to execute arbitrary code on any server running vulnerable versions of React RSC or Next.js App Router by sending a single HTTP request.
