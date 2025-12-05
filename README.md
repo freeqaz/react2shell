@@ -300,6 +300,12 @@ The vulnerability exploits the combination of `$@` (raw reference) and colon-del
 9. `$B0` triggers `_formData.get(_prefix + "0")` - both attacker-controlled
 10. Constructed Function called as thenable → **RCE**
 
+**Phase 4: Output Exfiltration** *(optional, redirect method)*
+
+11. Payload throws `NEXT_REDIRECT` error with base64-encoded command output
+12. Next.js catches redirect, sets `x-action-redirect` header before URL validation
+13. HTTP 303 returned to attacker with output in header
+
 ### Why the Hang?
 
 The original exploit constructs:
