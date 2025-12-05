@@ -315,7 +315,7 @@ The constructed Function is called as a thenable: `fn(resolve, reject)`. How we 
 | **Blind** | `execSync('CMD');0` | Executes but never resolves - connection hangs, no output |
 | **Throw** | `throw execSync('CMD').toString()` | Rejects Promise, output in error body (dev mode only) |
 | **Redirect** | `throw {digest:'NEXT_REDIRECT;...;'+b64(output)}` | Abuses Next.js redirect handling, output in header |
-| **Reflect** | `arguments[0]([execSync('CMD').toString()])` | Resolves Promise with output as action argument |
+| **Reflect** | `arguments[0]([execSync('CMD').toString()])` | Resolves Promise with output as action argument (requires valid action ID) |
 
 **Recommended: Redirect.** Works in production, no prerequisites, output in `x-action-redirect` header.
 
