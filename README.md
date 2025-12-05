@@ -241,21 +241,24 @@ sequenceDiagram
     N->>F: Parse multipart form data
     F->>JS: await getRoot - returns chunk as thenable
 
-    rect rgb(255, 230, 230)
-        Note over F: VULNERABILITY: No hasOwnProperty check
-        JS->>F: Call chunk.then - triggers parse of $1:__proto__:then
-        F-->>F: Traverses prototype chain to Chunk.prototype.then
+    rect rgb(80, 20, 20)
+        Note over F,JS: VULNERABILITY - No hasOwnProperty check
+        JS->>F: chunk.then parses $1:__proto__:then
+        F-->>F: Traverses to Chunk.prototype.then
     end
 
-    F->>JS: resolve with attacker's fake chunk object
-    JS->>F: JS Promise spec: call fakeChunk.then
+    F->>JS: resolve(attackerObject)
+    Note over JS: JS Promise spec: resolve(thenable)<br/>calls thenable.then()
+    JS->>F: fakeChunk.then() with attacker's _response
 
-    rect rgb(255, 200, 200)
-        Note over F: Now parsing with attacker's _response!
-        F->>F: $B0 calls _response._formData.get
-        Note over F: _formData.get = Function, _prefix = malicious code
-        F->>JS: Function invoked as thenable → RCE
+    rect rgb(80, 20, 20)
+        Note over F,JS: EXPLOITATION - Attacker controls _response
+        F->>F: $B0 → _formData.get(_prefix + "0")
+        Note over F: _formData.get = Function constructor<br/>_prefix = malicious code string
+        F->>JS: Function(code) invoked as thenable
     end
+
+    Note over JS: RCE - execSync() runs
 ```
 
 ### The Flight Protocol
