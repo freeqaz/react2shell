@@ -324,3 +324,7 @@ The key exploitation insight - using `$@` raw chunk references to create a self-
 - [React Security Advisory](https://react.dev/blog/2025/12/03/critical-security-vulnerability-in-react-server-components) - Official React disclosure
 - [Searchlight Cyber Detection Guide](https://slcyber.io/research-center/high-fidelity-detection-mechanism-for-rsc-next-js-rce-cve-2025-55182-cve-2025-66478/) - High-fidelity detection methodology
 - [React Flight Protocol](https://tonyalicea.dev/blog/understanding-react-server-components/) - Background on RSC serialization
+
+## License
+
+Code is licensed under the [MIT License](LICENSE). Documentation (*.md files) is licensed under [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
