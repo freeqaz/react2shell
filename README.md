@@ -259,6 +259,13 @@ sequenceDiagram
     end
 
     Note over JS: RCE - execSync() runs
+
+    rect rgb(20, 60, 20)
+        Note over A,JS: OUTPUT EXFILTRATION (redirect method)
+        JS-->>F: throw NEXT_REDIRECT with base64(output)
+        F-->>N: Error propagates up
+        N-->>A: HTTP 303 + x-action-redirect header
+    end
 ```
 
 ### The Flight Protocol
