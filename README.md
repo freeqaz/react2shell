@@ -281,16 +281,24 @@ The vulnerability exploits the combination of `$@` (raw reference) and colon-del
 
 ### The Complete Attack Chain
 
-1. **Request arrives** - POST with `Next-Action` header triggers RSC action handling
-2. **Multipart parsing** - Busboy parses form fields into chunk storage
-3. **Root chunk access** - `await getRoot(response)` returns chunk 0 as a Promise-like object
-4. **Chunk.prototype.then** - Chunk has a `then` method, making it thenable. JS Promise spec requires calling `thenable.then(resolve, reject)`
-5. **First parse** - Our JSON payload is parsed. `$1:__proto__:then` resolves to `Chunk.prototype.then`
-6. **Fake chunk created** - Our object has `then`, `status: "resolved_model"`, and `_response` properties
-7. **Promise resolution** - When `resolve(ourObject)` is called, JS sees it has a `then` method and calls it
-8. **Second parse** - `Chunk.prototype.then` runs on our fake chunk, using our controlled `_response` object
-9. **Function construction** - `$B0` triggers `_formData.get(_prefix + "0")` where both are attacker-controlled
-10. **Code execution** - The constructed Function is called as a thenable, executing our payload
+**Phase 1: Request Processing**
+
+1. POST with `Next-Action` header triggers RSC action handling
+2. Busboy parses multipart form fields into chunk storage
+3. `await getRoot(response)` returns chunk 0 as a thenable
+
+**Phase 2: Prototype Traversal**
+
+4. Chunk has a `then` method - JS Promise spec calls `thenable.then(resolve, reject)`
+5. Our payload is parsed; `$1:__proto__:then` resolves to `Chunk.prototype.then`
+6. Fake chunk object created with `then`, `status: "resolved_model"`, and `_response`
+
+**Phase 3: Code Execution**
+
+7. `resolve(ourObject)` triggers another `then()` call (JS thenable spec)
+8. `Chunk.prototype.then` runs using our controlled `_response` object
+9. `$B0` triggers `_formData.get(_prefix + "0")` - both attacker-controlled
+10. Constructed Function called as thenable → **RCE**
 
 ### Why the Hang?
 
