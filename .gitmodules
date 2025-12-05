@@ -1,0 +1,6 @@
+[submodule "deps/react"]
+	path = deps/react
+	url = https://github.com/facebook/react.git
+[submodule "deps/next.js"]
+	path = deps/next.js
+	url = https://github.com/vercel/next.js.git
