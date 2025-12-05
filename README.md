@@ -323,6 +323,22 @@ The constructed Function is called as a thenable: `fn(resolve, reject)`. How we 
 
 The blind approach hangs because the Promise never settles - `await` blocks forever. This is useful for fire-and-forget scenarios (reverse shells, out-of-band exfil via `curl`).
 
+### Alternative Attack Vectors
+
+The core vulnerability has been exploited through three distinct attack classes. This repository uses the first approach; other PoCs demonstrate the alternatives:
+
+| Attack Class | Mechanism | Action ID Required | Example PoC |
+|--------------|-----------|-------------------|-------------|
+| **Prototype Pollution** | `$1:__proto__:then` traversal to Chunk.prototype | No | react2shell, lachlan2k, joe-desimone |
+| **$F Function Reference** | `$F1` + `action#constructor` to reach Function | Yes | shellinteractive |
+| **Module Gadget** | `module#export` syntax (e.g., `child_process#execSync`) | Varies | ejpir research |
+
+**Why prototype pollution doesn't require an action ID:** Multipart form parsing feeds chunks to the Flight deserializer immediately. RCE occurs in `getOutlinedModel()` during chunk reference resolution - before Next.js validates the action ID. URL-encoded requests validate the action ID first (different code path at `action-handler.ts:768`).
+
+**Why $F reference requires an action ID:** The `$F` reference triggers `loadServerReference()`, which performs a manifest lookup. If the action doesn't exist, the request fails before code execution.
+
+For detailed analysis of all PoC implementations and their tradeoffs, see [external-pocs/COMPARISON.md](external-pocs/COMPARISON.md).
+
 ## Production vs Development
 
 React strips error details in production builds. This affects the throw-based exfiltration:
@@ -351,10 +367,16 @@ The key exploitation insight - using `$@` raw chunk references to create a self-
 - [React Security Advisory](https://react.dev/blog/2025/12/03/critical-security-vulnerability-in-react-server-components) - Official React disclosure
 
 **Community Research:**
-- [Original PoCs (lachlan2k)](https://github.com/lachlan2k/React2Shell-CVE-2025-55182-original-poc) - Original proof of concepts submitted to Meta
-- [Searchlight Cyber Detection Guide](https://slcyber.io/research-center/high-fidelity-detection-mechanism-for-rsc-next-js-rce-cve-2025-55182-cve-2025-66478/) - High-fidelity detection methodology
-- [Joe Desimone's PoC Analysis](https://gist.github.com/joe-desimone/ff0cae0aa0d20965d502e7a97cbde3e3) - Exploit analysis and proof of concept
-- [ejpir Technical Analysis](https://github.com/ejpir/CVE-2025-55182-research/blob/main/TECHNICAL-ANALYSIS.md) - Deep dive into the vulnerability mechanics
+
+| Author | Contribution | Attack Path | Notable Features |
+|--------|--------------|-------------|------------------|
+| [lachlan2k](https://github.com/lachlan2k/React2Shell-CVE-2025-55182-original-poc) | Original discoverer | Prototype pollution | Array.map chaining, 5-chunk structure, Waku support |
+| [ejpir](https://github.com/ejpir/CVE-2025-55182-research) | Gadget research | All paths | Module gadget catalog, persistence attacks, data URI path |
+| [joe-desimone](https://gist.github.com/joe-desimone/ff0cae0aa0d20965d502e7a97cbde3e3) | Python tooling | Prototype pollution | Reverse shell helper, callback exfil, timeout detection |
+| [labubusDest / MrR0b0t19](https://github.com/MrR0b0t19/CVE-2025-55182-shellinteractive) | Interactive shell | $F function reference | Python REPL, file upload/download, built-in test suite |
+| [Searchlight Cyber](https://slcyber.io/research-center/high-fidelity-detection-mechanism-for-rsc-next-js-rce-cve-2025-55182-cve-2025-66478/) | Detection methods | — | High-fidelity detection methodology, WAF signatures |
+
+For detailed comparison of all PoC implementations, see [external-pocs/COMPARISON.md](external-pocs/COMPARISON.md).
 
 **Background:**
 - [React Flight Protocol](https://tonyalicea.dev/blog/understanding-react-server-components/) - Understanding RSC serialization
