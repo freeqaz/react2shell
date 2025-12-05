@@ -351,6 +351,7 @@ The key exploitation insight - using `$@` raw chunk references to create a self-
 - [React Security Advisory](https://react.dev/blog/2025/12/03/critical-security-vulnerability-in-react-server-components) - Official React disclosure
 
 **Community Research:**
+- [Original PoCs (lachlan2k)](https://github.com/lachlan2k/React2Shell-CVE-2025-55182-original-poc) - Original proof of concepts submitted to Meta
 - [Searchlight Cyber Detection Guide](https://slcyber.io/research-center/high-fidelity-detection-mechanism-for-rsc-next-js-rce-cve-2025-55182-cve-2025-66478/) - High-fidelity detection methodology
 - [Joe Desimone's PoC Analysis](https://gist.github.com/joe-desimone/ff0cae0aa0d20965d502e7a97cbde3e3) - Exploit analysis and proof of concept
 - [ejpir Technical Analysis](https://github.com/ejpir/CVE-2025-55182-research/blob/main/TECHNICAL-ANALYSIS.md) - Deep dive into the vulnerability mechanics
