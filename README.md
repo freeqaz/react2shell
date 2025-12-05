@@ -86,7 +86,9 @@ npm ls next react-server-dom-webpack react-server-dom-turbopack
 
 ### The Attack
 
-The exploit sends a crafted multipart POST request with a `Next-Action` header. The payload abuses React's Flight protocol reference system to:
+Multiple attack vectors have been discovered for this vulnerability. The most common - and the one that works without any prerequisites - uses prototype pollution via React's Flight protocol reference system.
+
+The exploit sends a crafted multipart POST request with a `Next-Action` header. The payload abuses the reference system to:
 
 1. Traverse the prototype chain via `$1:__proto__:then`
 2. Construct a fake "chunk" object that mimics React's internal Chunk class
@@ -110,7 +112,9 @@ Content-Disposition: form-data; name="1"
 ------Boundary--
 ```
 
-The code executes during deserialization, before any action ID validation occurs. This means any `Next-Action` header value triggers the vulnerable code path.
+The code executes during deserialization, before any action ID validation occurs. This means any `Next-Action` header value triggers the vulnerable code path - no valid action ID is required.
+
+> **Other attack vectors** exist, including `$F` function references and direct module gadgets. These typically require a valid action ID. See [Alternative Attack Vectors](#alternative-attack-vectors) for details.
 
 ### The Root Cause
 
